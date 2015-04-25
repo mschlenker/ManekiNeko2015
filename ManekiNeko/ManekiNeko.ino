@@ -13,10 +13,8 @@
 // Number of MP3 files to cycle
 #define FILENUM 12
 
-// Minimum duration of a pause - divide by 10 to get seconds
+// Minimum and maximum duration of a pause - divide by 10 to get seconds
 #define MINPAUSE 15
-
-// Maximum duration of a pause - divide by 10 to get seconds
 #define MAXPAUSE 80
 
 // Receiver pin for sensors located around the cat
