@@ -1,20 +1,21 @@
-#include <SoftwareSerial.h>
+// #include <SoftwareSerial.h>
 #include <Manchester.h>
 
 #define OUTPIN 13
 #define MOTPIN 5
 #define DEADPIN 3
 #define FILENUM 12
-#define MINPAUSE 1500
-#define MAXPAUSE 8000
+#define MINPAUSE 15
+#define MAXPAUSE 80
 #define RX_PIN 7
-#define BUFFER_SIZE 10
-#define TOTALCYCLES 50
+#define BUFFER_SIZE 5
+#define TOTALCYCLES 5
+#define BEYONDDEAD 300
 
 const uint8_t networkId = 100;
 const uint8_t myNodeId = 23;
 uint8_t rcvBuffer[BUFFER_SIZE];
-// SoftwareSerial mySerial(10, 11); // RX, TX
+//SoftwareSerial mySerial(10, 11); // RX, TX
 volatile int song = 0;
 int val = 0; 
 volatile int cyclesLeft = TOTALCYCLES;
@@ -47,7 +48,6 @@ void playSound() {
 
 void setup()
 {
-  analogWrite(MOTPIN, 254);
   attachInterrupt(0, playSound, RISING);
   pinMode(DEADPIN, INPUT);
   Serial.begin(9600);
@@ -56,6 +56,7 @@ void setup()
   Serial.println("L");
   delay(3000);
   Serial.println("ON");
+  analogWrite(MOTPIN, 254);
   man.setupReceive(RX_PIN, MAN_600);
   man.beginReceiveArray(BUFFER_SIZE, rcvBuffer);
 }
@@ -66,7 +67,7 @@ void loop() // run over and over
     uint8_t receivedSize = 0;
     //Serial.println(rcvBuffer[4]);
     if (checkValidity())
-      if (rcvBuffer[4] > 0) {
+      if (rcvBuffer[3] > 0) {
         cyclesLeft = TOTALCYCLES; 
         analogWrite(MOTPIN, 254);
       }
@@ -76,11 +77,12 @@ void loop() // run over and over
     Serial.read();
   val = digitalRead(DEADPIN);
   if (val > 0) {
+    delay(BEYONDDEAD); 
      analogWrite(MOTPIN, 0);
      uptime = millis();
      if (cyclesLeft > 0) {
        cyclesLeft -= 1;
-       delay( MINPAUSE + (uptime % ( MAXPAUSE - MINPAUSE )) );
+       delay( ( MINPAUSE + (uptime % ( MAXPAUSE - MINPAUSE ))) * 100 );
        analogWrite(MOTPIN, 254);
      } 
   }
