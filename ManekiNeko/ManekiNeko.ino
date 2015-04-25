@@ -36,8 +36,8 @@
 #define MY_NODE_ID 23
  
 uint8_t rcvBuffer[BUFFER_SIZE];
-//SoftwareSerial mySerial(10, 11); // RX, TX
-volatile int song = 0;
+volatile uint8_t song = 0;
+volatile uint8_t lastsong = 0; 
 int val = 0; 
 volatile int cyclesLeft = TOTALCYCLES;
 volatile unsigned long uptime;
@@ -64,10 +64,13 @@ int checkValidity() {
 void playSound() {
   uptime = millis();
   song = uptime % FILENUM ;
+  if (song == lastsong) {
+    song = ( song + 1 ) % FILENUM ;
+  } 
   Serial.print("PSONGNAME ");
   Serial.print(song);
   Serial.println(".MP3");
-  // song = (song + 1) % FILENUM ;
+  lastsong = song; 
 }
 
 void setup()
