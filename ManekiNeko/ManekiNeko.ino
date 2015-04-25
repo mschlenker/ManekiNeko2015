@@ -1,16 +1,39 @@
 // #include <SoftwareSerial.h>
 #include <Manchester.h>
 
+// Output pin for some debugging
 #define OUTPIN 13
+
+// Pin to drive the motor, must be PWM capable
 #define MOTPIN 5
+
+// Pin where the dead center of the cat's arm is polled
 #define DEADPIN 3
+
+// Number of MP3 files to cycle
 #define FILENUM 12
+
+// Minimum duration of a pause - divide by 10 to get seconds
 #define MINPAUSE 15
+
+// Maximum duration of a pause - divide by 10 to get seconds
 #define MAXPAUSE 80
+
+// Receiver pin for sensors located around the cat
 #define RX_PIN 7
+
+// Buffer size for Manchester messages
 #define BUFFER_SIZE 5
+
+// Minimum number of cycle the cat will waive it's arm 
 #define TOTALCYCLES 5
+
+// Milliseconds to keep the motor running after the arm reached it's dead center
 #define BEYONDDEAD 300
+
+// Network and node ID of this Arduino
+#define NETWORK_ID 100
+#define MY_NODE_ID 23
 
 const uint8_t networkId = 100;
 const uint8_t myNodeId = 23;

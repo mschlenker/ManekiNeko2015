@@ -1,7 +1,6 @@
 #include <Manchester.h>
 #define TX_PIN 12 
 #define POWER_PIN 13 
-#define PIR_PIN A3  
   
 uint8_t data[5] = {
   100, // Network ID
