@@ -10,6 +10,9 @@
 // Pin where the dead center of the cat's arm is polled
 #define DEADPIN 3
 
+// Pin which powers MPs player - just to save energy
+#define MP3_PIN 12
+
 // Number of MP3 files to cycle
 #define FILENUM 12
 
@@ -59,6 +62,10 @@ int checkValidity() {
   return 0;
 }
 
+/*
+  Let's make UAHHHH!
+*/
+
 void playSound() {
   uptime = millis();
   song = uptime % FILENUM ;
@@ -71,16 +78,23 @@ void playSound() {
   lastsong = song; 
 }
 
-void setup()
-{
+/*
+  Initialize the MP3 player
+*/
+
+void initPlayer() {
+  delay(1000);
+  Serial.println("L");
+  delay(1000);
+  Serial.println("ON");
+}
+
+void setup() {
   attachInterrupt(0, playSound, RISING);
   pinMode(DEADPIN, INPUT);
   Serial.begin(9600);
   pinMode(OUTPIN, OUTPUT);
-  delay(5000);
-  Serial.println("L");
-  delay(3000);
-  Serial.println("ON");
+  initPlayer(); 
   analogWrite(MOTPIN, 254);
   man.setupReceive(RX_PIN, MAN_600);
   man.beginReceiveArray(BUFFER_SIZE, rcvBuffer);
