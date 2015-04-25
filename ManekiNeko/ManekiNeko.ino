@@ -34,9 +34,7 @@
 // Network and node ID of this Arduino
 #define NETWORK_ID 100
 #define MY_NODE_ID 23
-
-const uint8_t networkId = 100;
-const uint8_t myNodeId = 23;
+ 
 uint8_t rcvBuffer[BUFFER_SIZE];
 //SoftwareSerial mySerial(10, 11); // RX, TX
 volatile int song = 0;
@@ -44,8 +42,12 @@ int val = 0;
 volatile int cyclesLeft = TOTALCYCLES;
 volatile unsigned long uptime;
 
+/*
+  Check the validity of a message received via Manchester transmission.
+*/
+
 int checkValidity() {
-  if (rcvBuffer[1] > 0 && rcvBuffer[1] != myNodeId) {
+  if (rcvBuffer[1] > 0 && rcvBuffer[1] != MY_NODE_ID ) {
     return 0;
   }
   byte checksum = B10101010;
@@ -54,9 +56,8 @@ int checkValidity() {
   }
   if (checksum == rcvBuffer[BUFFER_SIZE - 1]) {
     return 1;
-  } else {
-    return 1;
   }
+  // Now really check! 
   return 0;
 }
 
