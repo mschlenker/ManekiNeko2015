@@ -117,8 +117,7 @@ void setup() {
   man.beginReceiveArray(BUFFER_SIZE, rcvBuffer);
 }
 
-void loop() // run over and over
-{
+void loop() {
   if (man.receiveComplete()) {
     uint8_t receivedSize = 0;
     //Serial.println(rcvBuffer[4]);
@@ -140,13 +139,13 @@ void loop() // run over and over
     analogWrite(MOTPIN, 0);
     // hard coded delay to continue running
     // delay(BEYONDDEAD); 
-     analogWrite(MOTPIN, 0);
-     uptime = millis();
-     if (cyclesLeft > 0) {
-       cyclesLeft -= 1;
-       delay( ( MINPAUSE + (uptime % ( MAXPAUSE - MINPAUSE ))) * 100 );
-       analogWrite(MOTPIN, 254);
-     } 
+    analogWrite(MOTPIN, 0);
+    uptime = millis();
+    if (cyclesLeft > 0) {
+      cyclesLeft -= 1;
+      delay( ( MINPAUSE + (uptime % ( MAXPAUSE - MINPAUSE ))) * 100 );
+      analogWrite(MOTPIN, 254);
+    } 
   }
 }
 
