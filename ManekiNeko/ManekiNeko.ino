@@ -1,4 +1,4 @@
-// #include <SoftwareSerial.h>
+
 #include <Manchester.h>
 
 // Output pin for some debugging
@@ -102,6 +102,32 @@ void initPlayer() {
   Serial.println("ON");
 }
 
+void stopPlayer() {
+  digitalWrite(MP3_POWER_PIN, LOW);
+}
+
+/*
+  Switch the light
+*/
+
+void lightOn() {
+  digitalWrite(RX_POWER_PIN, LOW);
+  digitalWrite(TX_POWER_PIN, HIGH);
+  delay(100);
+  
+  digitalWrite(TX_POWER_PIN, LOW);
+  digitalWrite(RX_POWER_PIN, HIGH);
+}
+
+void lightOff() {
+  digitalWrite(RX_POWER_PIN, LOW);
+  digitalWrite(TX_POWER_PIN, HIGH);
+  delay(100);
+  
+  digitalWrite(TX_POWER_PIN, LOW);
+  digitalWrite(RX_POWER_PIN, HIGH);
+}
+
 void setup() {
   attachInterrupt(0, playSound, RISING);
   pinMode(DEADPIN, INPUT);
@@ -120,11 +146,15 @@ void setup() {
 void loop() {
   if (man.receiveComplete()) {
     uint8_t receivedSize = 0;
-    //Serial.println(rcvBuffer[4]);
     if (checkValidity())
       if (rcvBuffer[3] > 0) {
+        if (cyclesLeft < 1 ) {
+          // switch on everything again
+          initPlayer(); 
+          lightOn();  
+        }
         cyclesLeft = TOTALCYCLES; 
-        analogWrite(MOTPIN, 254);
+        analogWrite(MOTPIN, MOTOR_DUTY_CYCLE);
       }
       man.beginReceiveArray(BUFFER_SIZE, rcvBuffer);
   }
@@ -145,7 +175,11 @@ void loop() {
       cyclesLeft -= 1;
       delay( ( MINPAUSE + (uptime % ( MAXPAUSE - MINPAUSE ))) * 100 );
       analogWrite(MOTPIN, 254);
-    } 
+    } else {
+      // we have just reached the last cycle, switch off everything
+      stopPlayer(); 
+      lightOff(); 
+    }
   }
 }
 
