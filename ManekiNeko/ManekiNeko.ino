@@ -2,7 +2,7 @@
 #include <Manchester.h>
 
 // Output pin for some debugging
-#define OUTPIN 13
+#define DEBUG_PIN 13
 
 // Pin to drive the motor, must be PWM capable
 #define MOTPIN 5
@@ -11,7 +11,7 @@
 #define DEADPIN 3
 
 // Pin which powers MPs player - just to save energy
-#define MP3_PIN 12
+#define MP3_POWER_PIN 12
 
 // Pin which powers the 434MHz receiver
 #define RX_POWER_PIN 11
@@ -40,6 +40,9 @@
 
 // Milliseconds to keep the motor running after the arm reached it's dead center
 #define BEYONDDEAD 300
+
+// Duty cycle for the motor
+#define MOTOR_DUTY_CYCLE 254
 
 // Network and node ID of this Arduino
 #define NETWORK_ID 100
@@ -92,6 +95,7 @@ void playSound() {
 */
 
 void initPlayer() {
+  digitalWrite(MP3_POWER_PIN, HIGH);
   delay(1000);
   Serial.println("L");
   delay(1000);
@@ -102,9 +106,13 @@ void setup() {
   attachInterrupt(0, playSound, RISING);
   pinMode(DEADPIN, INPUT);
   Serial.begin(9600);
-  pinMode(OUTPIN, OUTPUT);
+  pinMode(DEBUG_PIN, OUTPUT);
+  pinMode(TX_POWER_PIN, OUTPUT);
+  pinMode(RX_POWER_PIN, OUTPUT);
+  pinMode(MP3_POWER_PIN, OUTPUT);
+  digitalWrite(RX_POWER_PIN, HIGH);
   initPlayer(); 
-  analogWrite(MOTPIN, 254);
+  analogWrite(MOTPIN, MOTOR_DUTY_CYCLE);
   man.setupReceive(RX_PIN, MAN_600);
   man.beginReceiveArray(BUFFER_SIZE, rcvBuffer);
 }
@@ -125,7 +133,13 @@ void loop() // run over and over
     Serial.read();
   val = digitalRead(DEADPIN);
   if (val > 0) {
-    delay(BEYONDDEAD); 
+    analogWrite(MOTPIN, MOTOR_DUTY_CYCLE / 2);
+    while (val > 0) {
+       val = digitalRead(DEADPIN);
+    }
+    analogWrite(MOTPIN, 0);
+    // hard coded delay to continue running
+    // delay(BEYONDDEAD); 
      analogWrite(MOTPIN, 0);
      uptime = millis();
      if (cyclesLeft > 0) {
