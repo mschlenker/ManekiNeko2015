@@ -103,9 +103,9 @@ void playSound() {
 
 void initPlayer() {
   digitalWrite(MP3_POWER_PIN, HIGH);
-  delay(1000);
+  delay(1200);
   Serial.println("L");
-  delay(1000);
+  delay(300);
   Serial.println("ON");
 }
 
