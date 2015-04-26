@@ -1,5 +1,6 @@
 
 #include <Manchester.h>
+#include <RCSwitch.h>
 
 // Output pin for some debugging
 #define DEBUG_PIN 13
@@ -44,9 +45,14 @@
 // Duty cycle for the motor
 #define MOTOR_DUTY_CYCLE 254
 
-// Network and node ID of this Arduino
+// Network and node ID of this Arduino for Manchester transmission
 #define NETWORK_ID 100
 #define MY_NODE_ID 23
+
+// System code and unit code for RC switch
+#define SYSTEMCODE "11111"
+#define UNITCODE "00010"
+
  
 uint8_t rcvBuffer[BUFFER_SIZE];
 volatile uint8_t song = 0;
@@ -54,6 +60,7 @@ volatile uint8_t lastsong = 0;
 int val = 0; 
 volatile int cyclesLeft = TOTALCYCLES;
 volatile unsigned long uptime;
+RCSwitch lightSwitch = RCSwitch();
 
 /*
   Check the validity of a message received via Manchester transmission.
@@ -114,7 +121,7 @@ void lightOn() {
   digitalWrite(RX_POWER_PIN, LOW);
   digitalWrite(TX_POWER_PIN, HIGH);
   delay(100);
-  
+  lightSwitch.switchOn(SYSTEMCODE, UNITCODE);
   digitalWrite(TX_POWER_PIN, LOW);
   digitalWrite(RX_POWER_PIN, HIGH);
 }
@@ -123,7 +130,7 @@ void lightOff() {
   digitalWrite(RX_POWER_PIN, LOW);
   digitalWrite(TX_POWER_PIN, HIGH);
   delay(100);
-  
+  lightSwitch.switchOff(SYSTEMCODE, UNITCODE);
   digitalWrite(TX_POWER_PIN, LOW);
   digitalWrite(RX_POWER_PIN, HIGH);
 }
@@ -137,6 +144,7 @@ void setup() {
   pinMode(RX_POWER_PIN, OUTPUT);
   pinMode(MP3_POWER_PIN, OUTPUT);
   digitalWrite(RX_POWER_PIN, HIGH);
+  lightSwitch.enableTransmit(TX_PIN);
   initPlayer(); 
   analogWrite(MOTPIN, MOTOR_DUTY_CYCLE);
   man.setupReceive(RX_PIN, MAN_600);
@@ -150,16 +158,15 @@ void loop() {
       if (rcvBuffer[3] > 0) {
         if (cyclesLeft < 1 ) {
           // switch on everything again
-          initPlayer(); 
-          lightOn();  
+          lightOn();
+          initPlayer();   
         }
         cyclesLeft = TOTALCYCLES; 
         analogWrite(MOTPIN, MOTOR_DUTY_CYCLE);
       }
       man.beginReceiveArray(BUFFER_SIZE, rcvBuffer);
   }
-  if (Serial.available())
-    Serial.read();
+  if (Serial.available()) Serial.read();
   val = digitalRead(DEADPIN);
   if (val > 0) {
     analogWrite(MOTPIN, MOTOR_DUTY_CYCLE / 2);
