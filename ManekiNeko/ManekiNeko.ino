@@ -13,15 +13,24 @@
 // Pin which powers MPs player - just to save energy
 #define MP3_PIN 12
 
+// Pin which powers the 434MHz receiver
+#define RX_POWER_PIN 11
+
+// Pin which powers the 434MHz transmitter
+#define TX_POWER_PIN 10
+
+// Receiver pin for sensors located around the cat
+#define RX_PIN 7
+
+// Transmitter pin for 434MHz outlets
+#define TX_PIN 8
+
 // Number of MP3 files to cycle
 #define FILENUM 12
 
 // Minimum and maximum duration of a pause - divide by 10 to get seconds
 #define MINPAUSE 15
 #define MAXPAUSE 80
-
-// Receiver pin for sensors located around the cat
-#define RX_PIN 7
 
 // Buffer size for Manchester messages
 #define BUFFER_SIZE 5
