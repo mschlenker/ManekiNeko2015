@@ -144,6 +144,7 @@ void setup() {
   pinMode(RX_POWER_PIN, OUTPUT);
   pinMode(MP3_POWER_PIN, OUTPUT);
   digitalWrite(RX_POWER_PIN, HIGH);
+  digitalWrite(TX_POWER_PIN, LOW);
   lightSwitch.enableTransmit(TX_PIN);
   initPlayer(); 
   analogWrite(MOTPIN, MOTOR_DUTY_CYCLE);
