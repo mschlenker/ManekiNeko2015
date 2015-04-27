@@ -32,7 +32,7 @@ void transmitMotion() {
 void setup() {
   pinMode(POWER_PIN, OUTPUT);
   attachInterrupt(0, transmitMotion, RISING);
-  man.setupTransmit(TX_PIN, MAN_600);
+  man.setupTransmit(TX_PIN, MAN_300);
   Serial.begin(9600);
 }
 

@@ -6,25 +6,25 @@
 #define DEBUG_PIN 13
 
 // Pin to drive the motor, must be PWM capable
-#define MOTPIN 5
+#define MOTPIN 10
 
 // Pin where the dead center of the cat's arm is polled
-#define DEADPIN 3
+#define DEADPIN 2
 
 // Pin which powers MPs player - just to save energy
-#define MP3_POWER_PIN 12
+#define MP3_POWER_PIN A0
 
 // Pin which powers the 434MHz receiver
-#define RX_POWER_PIN 11
+#define RX_POWER_PIN 6
 
 // Pin which powers the 434MHz transmitter
-#define TX_POWER_PIN 10
+#define TX_POWER_PIN 5
 
 // Receiver pin for sensors located around the cat
 #define RX_PIN 7
 
 // Transmitter pin for 434MHz outlets
-#define TX_PIN 8
+#define TX_PIN 4
 
 // Number of MP3 files to cycle
 #define FILENUM 12
@@ -43,15 +43,18 @@
 #define BEYONDDEAD 300
 
 // Duty cycle for the motor
-#define MOTOR_DUTY_CYCLE 254
+#define MOTOR_DUTY_CYCLE 100
 
 // Network and node ID of this Arduino for Manchester transmission
 #define NETWORK_ID 100
 #define MY_NODE_ID 23
 
 // System code and unit code for RC switch
-#define SYSTEMCODE "11111"
-#define UNITCODE "00010"
+// #define SYSTEMCODE "11111"
+// #define UNITCODE "00010"
+
+#define SYSTEMCODE 1
+#define UNITCODE 1
 
  
 uint8_t rcvBuffer[BUFFER_SIZE];
@@ -67,6 +70,7 @@ RCSwitch lightSwitch = RCSwitch();
 */
 
 int checkValidity() {
+  return 1;
   if (rcvBuffer[1] > 0 && rcvBuffer[1] != MY_NODE_ID ) {
     return 0;
   }
@@ -136,19 +140,22 @@ void lightOff() {
 }
 
 void setup() {
-  attachInterrupt(0, playSound, RISING);
+  attachInterrupt(1, playSound, RISING);
   pinMode(DEADPIN, INPUT);
   Serial.begin(9600);
   pinMode(DEBUG_PIN, OUTPUT);
   pinMode(TX_POWER_PIN, OUTPUT);
   pinMode(RX_POWER_PIN, OUTPUT);
   pinMode(MP3_POWER_PIN, OUTPUT);
+  pinMode(MOTPIN, OUTPUT);
   digitalWrite(RX_POWER_PIN, HIGH);
   digitalWrite(TX_POWER_PIN, LOW);
   lightSwitch.enableTransmit(TX_PIN);
   initPlayer(); 
   analogWrite(MOTPIN, MOTOR_DUTY_CYCLE);
-  man.setupReceive(RX_PIN, MAN_600);
+  // digitalWrite(MOTPIN, HIGH);
+  digitalWrite(DEBUG_PIN, HIGH);
+  man.setupReceive(RX_PIN, MAN_300);
   man.beginReceiveArray(BUFFER_SIZE, rcvBuffer);
 }
 
@@ -164,6 +171,7 @@ void loop() {
         }
         cyclesLeft = TOTALCYCLES; 
         analogWrite(MOTPIN, MOTOR_DUTY_CYCLE);
+        digitalWrite(DEBUG_PIN, HIGH);
       }
       man.beginReceiveArray(BUFFER_SIZE, rcvBuffer);
   }
@@ -171,18 +179,20 @@ void loop() {
   val = digitalRead(DEADPIN);
   if (val > 0) {
     analogWrite(MOTPIN, MOTOR_DUTY_CYCLE / 2);
+    digitalWrite(DEBUG_PIN, HIGH);
     while (val > 0) {
        val = digitalRead(DEADPIN);
     }
     analogWrite(MOTPIN, 0);
+    digitalWrite(DEBUG_PIN, LOW);
     // hard coded delay to continue running
     // delay(BEYONDDEAD); 
-    analogWrite(MOTPIN, 0);
+    // analogWrite(MOTPIN, 0);
     uptime = millis();
     if (cyclesLeft > 0) {
       cyclesLeft -= 1;
       delay( ( MINPAUSE + (uptime % ( MAXPAUSE - MINPAUSE ))) * 100 );
-      analogWrite(MOTPIN, 254);
+      analogWrite(MOTPIN, MOTOR_DUTY_CYCLE);
     } else {
       // we have just reached the last cycle, switch off everything
       stopPlayer(); 
