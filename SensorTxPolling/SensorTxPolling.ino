@@ -48,5 +48,5 @@ void loop() {
     digitalWrite(CONTROL_PIN, LOW);
   }
   // Serial.println("Transmitted something!");
-  delay(2000);
+  delay(500);
 }
