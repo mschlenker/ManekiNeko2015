@@ -1,7 +1,7 @@
 #include <Manchester.h>
 
 #define RX_PIN 7
-#define BUFFER_SIZE 5
+#define BUFFER_SIZE 3
 #define OUTPIN 13
 #define MY_NODE_ID 23
 #define MY_NET_ID 100
@@ -25,7 +25,7 @@ int checkValidity() {
 void setup() {
   pinMode(OUTPIN, OUTPUT);
   Serial.begin(9600);
-  man.setupReceive(RX_PIN, MAN_600);
+  man.setupReceive(RX_PIN, MAN_300);
   man.beginReceiveArray(BUFFER_SIZE, rcvBuffer);
 }
 
@@ -33,8 +33,8 @@ void loop() {
   if (man.receiveComplete()) {
     Serial.println("Received something!"); 
     uint8_t receivedSize = 0;
-    if (checkValidity())
-      if (rcvBuffer[3] > 0) {
+    // if (checkValidity())
+      if (rcvBuffer[1] > 0) {
         digitalWrite(OUTPIN, HIGH);
         delay(500);
         digitalWrite(OUTPIN, LOW);

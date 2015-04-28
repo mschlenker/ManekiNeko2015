@@ -37,13 +37,13 @@
 #define MAXPAUSE 80
 
 // Buffer size for Manchester messages
-#define BUFFER_SIZE 5
+#define BUFFER_SIZE 3
 
 // Minimum number of cycle the cat will waive it's arm 
 #define TOTALCYCLES 5
 
 // Milliseconds to keep the motor running after the arm reached it's dead center
-#define BEYONDDEAD 10
+#define BEYONDDEAD 31
 
 // Duty cycle for the motor
 #define MOTOR_DUTY_CYCLE 25
@@ -104,8 +104,10 @@ void setPwmFrequency(int pin, int divisor) {
 */
 
 int checkValidity() {
-  return 1;
-  if (rcvBuffer[1] > 0 && rcvBuffer[1] != MY_NODE_ID ) {
+  if (rcvBuffer[1] > 0) 
+    return 1;
+  return 0;
+  /* if (rcvBuffer[0] > 0 && rcvBuffer[0] != MY_NODE_ID ) {
     return 0;
   }
   byte checksum = B10101010;
@@ -116,7 +118,7 @@ int checkValidity() {
     return 1;
   }
   // Now really check! 
-  return 0;
+  return 0; */
 }
 
 /*
@@ -156,20 +158,20 @@ void stopPlayer() {
 */
 
 void lightOn() {
-  digitalWrite(RX_POWER_PIN, LOW);
+  // digitalWrite(RX_POWER_PIN, LOW);
   digitalWrite(TX_POWER_PIN, HIGH);
   delay(100);
   lightSwitch.switchOn(SYSTEMCODE, UNITCODE);
-  digitalWrite(TX_POWER_PIN, LOW);
+  // digitalWrite(TX_POWER_PIN, LOW);
   digitalWrite(RX_POWER_PIN, HIGH);
 }
 
 void lightOff() {
-  digitalWrite(RX_POWER_PIN, LOW);
+  // digitalWrite(RX_POWER_PIN, LOW);
   digitalWrite(TX_POWER_PIN, HIGH);
   delay(100);
   lightSwitch.switchOff(SYSTEMCODE, UNITCODE);
-  digitalWrite(TX_POWER_PIN, LOW);
+  // digitalWrite(TX_POWER_PIN, LOW);
   digitalWrite(RX_POWER_PIN, HIGH);
 }
 
@@ -200,18 +202,17 @@ void setup() {
 void loop() {
   if (man.receiveComplete()) {
     uint8_t receivedSize = 0;
-    if (checkValidity())
-      if (rcvBuffer[3] > 0) {
-        if (cyclesLeft < 1 ) {
-          // switch on everything again
-          lightOn();
-          initPlayer();   
-        }
-        cyclesLeft = TOTALCYCLES; 
-        analogWrite(MOTPIN, MOTOR_DUTY_CYCLE);
-        digitalWrite(DEBUG_PIN, HIGH);
+    // if (rcvBuffer[1] > 0) {
+      if (cyclesLeft < 1 ) {
+        // switch on everything again
+        initPlayer();   
       }
-      man.beginReceiveArray(BUFFER_SIZE, rcvBuffer);
+      cyclesLeft = TOTALCYCLES; 
+      lightOn();
+      analogWrite(MOTPIN, MOTOR_DUTY_CYCLE);
+      digitalWrite(DEBUG_PIN, HIGH);
+     // }
+     man.beginReceiveArray(BUFFER_SIZE, rcvBuffer);
   }
   if (Serial.available()) Serial.read();
   val = digitalRead(DEADPIN);
@@ -236,8 +237,10 @@ void loop() {
       // we have just reached the last cycle, switch off everything
       stopPlayer(); 
       lightOff(); 
-      delay(MAXPAUSE * 100);
-    }
+      // delay(MAXPAUSE * 100);
+    }  
+  } else { 
+    // delay(125);     
   }
 }
 
