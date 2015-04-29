@@ -41,7 +41,7 @@
 #define BUFFER_SIZE 3
 
 // Minimum number of cycle the cat will waive it's arm 
-#define TOTALCYCLES 5
+#define TOTALCYCLES 17
 
 // Milliseconds to keep the motor running after the arm reached it's dead center
 #define BEYONDDEAD 23
@@ -136,6 +136,9 @@ void playSound() {
   Serial.print("PSONGNAME ");
   Serial.print(song);
   Serial.println(".MP3");
+  for (int j=0; j<100; j++) {
+    Serial.println("+");  
+  }
   lastsong = song; 
 }
 
@@ -163,7 +166,10 @@ void lightOn() {
   digitalWrite(RX_POWER_PIN, LOW);
   digitalWrite(TX_POWER_PIN, HIGH);
   delay(100);
-  lightSwitch.switchOn(SYSTEMCODE, UNITCODE);
+  for (int j=0; j<3; j++ ) {
+    delay(150);
+    lightSwitch.switchOn(SYSTEMCODE, UNITCODE);
+  }
   digitalWrite(TX_POWER_PIN, LOW);
   digitalWrite(RX_POWER_PIN, HIGH);
 }
@@ -172,7 +178,10 @@ void lightOff() {
   digitalWrite(RX_POWER_PIN, LOW);
   digitalWrite(TX_POWER_PIN, HIGH);
   delay(100);
-  lightSwitch.switchOff(SYSTEMCODE, UNITCODE);
+  for (int j=0; j<3; j++ ) {
+    delay(150);
+    lightSwitch.switchOff(SYSTEMCODE, UNITCODE);
+  }
   digitalWrite(TX_POWER_PIN, LOW);
   digitalWrite(RX_POWER_PIN, HIGH);
 }
@@ -198,8 +207,8 @@ void setup() {
   // digitalWrite(MOTPIN, HIGH);
   digitalWrite(DEBUG_PIN, HIGH);
   lightOn(); 
-  man.setupReceive(RX_PIN, MAN_300);
-  man.beginReceiveArray(BUFFER_SIZE, rcvBuffer);
+  /* man.setupReceive(RX_PIN, MAN_300);
+  man.beginReceiveArray(BUFFER_SIZE, rcvBuffer); */
 }
 
 void loop() {
@@ -207,7 +216,7 @@ void loop() {
     Serial.read();
   val = digitalRead(DEADPIN);
   sound = digitalRead(SOUNDPIN);  
-  if (man.receiveComplete()) {
+  /* if (man.receiveComplete()) {
     uint8_t receivedSize = 0;
     if (cyclesLeft < 1 && sound < 1) {
       // switch on everything again
@@ -218,7 +227,7 @@ void loop() {
     lightOn(); 
     cyclesLeft = TOTALCYCLES; 
     man.beginReceiveArray(BUFFER_SIZE, rcvBuffer);
-  }
+  } */
   if (sound > 0) {
     playSound();
     delay(300);   
@@ -244,7 +253,13 @@ void loop() {
       // we have just reached the last cycle, switch off everything
       stopPlayer(); 
       lightOff(); 
-      delay(MAXPAUSE * 12);
+      delay(MAXPAUSE * 10);
+      cyclesLeft = TOTALCYCLES;
+      // switch on everything again
+      initPlayer();
+      lightOn();
+      analogWrite(MOTPIN, MOTOR_DUTY_CYCLE);
+      digitalWrite(DEBUG_PIN, HIGH);
     }  
   } else { 
     // delay(125);     
