@@ -36,12 +36,13 @@
 // Minimum and maximum duration of a pause - divide by 10 to get seconds
 #define MINPAUSE 150
 #define MAXPAUSE 1500
+#define INTERPAUSE 20000
 
 // Buffer size for Manchester messages
 #define BUFFER_SIZE 3
 
 // Minimum number of cycle the cat will waive it's arm 
-#define TOTALCYCLES 17
+#define TOTALCYCLES 15
 
 // Milliseconds to keep the motor running after the arm reached it's dead center
 #define BEYONDDEAD 23
@@ -253,7 +254,7 @@ void loop() {
       // we have just reached the last cycle, switch off everything
       stopPlayer(); 
       lightOff(); 
-      delay(MAXPAUSE * 10);
+      delay(INTERPAUSE);
       cyclesLeft = TOTALCYCLES;
       // switch on everything again
       initPlayer();
