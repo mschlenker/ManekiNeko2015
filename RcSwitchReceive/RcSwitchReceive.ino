@@ -23,7 +23,7 @@ void loop() {
     // Serial.print("Uptime: ");
     // Serial.println(millis());
     if ( mySwitch.getReceivedValue() == OFF_SEQ ) {
-      digitalWrite(LIGHTPIN, LOW);
+      // digitalWrite(LIGHTPIN, LOW);
       // running = 0;
     }
     if ( mySwitch.getReceivedValue() == ON_SEQ ) {

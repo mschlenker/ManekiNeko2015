@@ -167,8 +167,8 @@ void lightOn() {
   digitalWrite(RX_POWER_PIN, LOW);
   digitalWrite(TX_POWER_PIN, HIGH);
   delay(100);
-  for (int j=0; j<3; j++ ) {
-    delay(150);
+  for (int j=0; j<10; j++ ) {
+    delay(200);
     lightSwitch.switchOn(SYSTEMCODE, UNITCODE);
   }
   digitalWrite(TX_POWER_PIN, LOW);
@@ -179,8 +179,8 @@ void lightOff() {
   digitalWrite(RX_POWER_PIN, LOW);
   digitalWrite(TX_POWER_PIN, HIGH);
   delay(100);
-  for (int j=0; j<3; j++ ) {
-    delay(150);
+  for (int j=0; j<10; j++ ) {
+    delay(200);
     lightSwitch.switchOff(SYSTEMCODE, UNITCODE);
   }
   digitalWrite(TX_POWER_PIN, LOW);
@@ -198,7 +198,6 @@ void setup() {
   pinMode(MP3_POWER_PIN, OUTPUT);
   pinMode(AMP_POWER_PIN, OUTPUT);
   pinMode(MOTPIN, OUTPUT);
-  setPwmFrequency(MOTPIN, 1);
   digitalWrite(RX_POWER_PIN, HIGH);
   digitalWrite(TX_POWER_PIN, LOW);
   digitalWrite(AMP_POWER_PIN, HIGH);
@@ -208,6 +207,7 @@ void setup() {
   // digitalWrite(MOTPIN, HIGH);
   digitalWrite(DEBUG_PIN, HIGH);
   lightOn(); 
+  setPwmFrequency(MOTPIN, 1);
   /* man.setupReceive(RX_PIN, MAN_300);
   man.beginReceiveArray(BUFFER_SIZE, rcvBuffer); */
 }
